@@ -2,8 +2,8 @@
 #include <vector>
 
 struct Board {
-    int width = 20;   // grid cells horizontally
-    int height = 15;  // grid cells vertically
+    int width = 40;   // grid cells horizontally
+    int height = 40;  // grid cells vertically
     float cell_size = 0.4f;  // size of each cell in world units
     
     // Get world position from grid position (centered at origin)

@@ -14,39 +14,19 @@ struct Mesh {
     void init() {
         float p = +0.5f; // for readability
         float n = -0.5f; // for readability
+        
+        // Simple 2D quad (4 vertices instead of 24 for cube)
+        // Faces toward +Z (camera direction)
         std::vector<Vertex> vertices = {
-            Vertex{ glm::vec3{n, n, p}, glm::vec3(0, 0, +1), glm::vec2{0.33, 0.75}, glm::vec4{1, 0, 0, 1} }, // front
-            Vertex{ glm::vec3{p, n, p}, glm::vec3(0, 0, +1), glm::vec2{0.66, 0.75}, glm::vec4{1, 0, 0, 1} },
-            Vertex{ glm::vec3{n, p, p}, glm::vec3(0, 0, +1), glm::vec2{0.33, 0.50}, glm::vec4{1, 0, 0, 1} },
-            Vertex{ glm::vec3{p, p, p}, glm::vec3(0, 0, +1), glm::vec2{0.66, 0.50}, glm::vec4{1, 0, 0, 1} },
-            Vertex{ glm::vec3{n, n, n}, glm::vec3(0, 0, -1), glm::vec2{0.33, 0.00}, glm::vec4{1, 0, 0, 1} }, // back
-            Vertex{ glm::vec3{p, n, n}, glm::vec3(0, 0, -1), glm::vec2{0.66, 0.00}, glm::vec4{1, 0, 0, 1} },
-            Vertex{ glm::vec3{n, p, n}, glm::vec3(0, 0, -1), glm::vec2{0.33, 0.25}, glm::vec4{1, 0, 0, 1} },
-            Vertex{ glm::vec3{p, p, n}, glm::vec3(0, 0, -1), glm::vec2{0.66, 0.25}, glm::vec4{1, 0, 0, 1} },
-            Vertex{ glm::vec3{n, n, n}, glm::vec3(-1, 0, 0), glm::vec2{0.00, 0.50}, glm::vec4{0, 1, 0, 1} }, // left
-            Vertex{ glm::vec3{n, n, p}, glm::vec3(-1, 0, 0), glm::vec2{0.00, 0.25}, glm::vec4{0, 1, 0, 1} },
-            Vertex{ glm::vec3{n, p, n}, glm::vec3(-1, 0, 0), glm::vec2{0.33, 0.50}, glm::vec4{0, 1, 0, 1} },
-            Vertex{ glm::vec3{n, p, p}, glm::vec3(-1, 0, 0), glm::vec2{0.33, 0.25}, glm::vec4{0, 1, 0, 1} },
-            Vertex{ glm::vec3{p, n, n}, glm::vec3(+1, 0, 0), glm::vec2{1.00, 0.50}, glm::vec4{0, 1, 0, 1} }, // right
-            Vertex{ glm::vec3{p, n, p}, glm::vec3(+1, 0, 0), glm::vec2{1.00, 0.25}, glm::vec4{0, 1, 0, 1} },
-            Vertex{ glm::vec3{p, p, n}, glm::vec3(+1, 0, 0), glm::vec2{0.66, 0.50}, glm::vec4{0, 1, 0, 1} },
-            Vertex{ glm::vec3{p, p, p}, glm::vec3(+1, 0, 0), glm::vec2{0.66, 0.25}, glm::vec4{0, 1, 0, 1} },
-            Vertex{ glm::vec3{n, p, n}, glm::vec3(0, +1, 0), glm::vec2{0.33, 0.25}, glm::vec4{0, 0, 1, 1} }, // top
-            Vertex{ glm::vec3{n, p, p}, glm::vec3(0, +1, 0), glm::vec2{0.33, 0.50}, glm::vec4{0, 0, 1, 1} },
-            Vertex{ glm::vec3{p, p, n}, glm::vec3(0, +1, 0), glm::vec2{0.66, 0.25}, glm::vec4{0, 0, 1, 1} },
-            Vertex{ glm::vec3{p, p, p}, glm::vec3(0, +1, 0), glm::vec2{0.66, 0.50}, glm::vec4{0, 0, 1, 1} },
-            Vertex{ glm::vec3{n, n, n}, glm::vec3(0, -1, 0), glm::vec2{0.33, 0.75}, glm::vec4{0, 0, 1, 1} }, // bottom
-            Vertex{ glm::vec3{n, n, p}, glm::vec3(0, -1, 0), glm::vec2{0.33, 1.00}, glm::vec4{0, 0, 1, 1} },
-            Vertex{ glm::vec3{p, n, n}, glm::vec3(0, -1, 0), glm::vec2{0.66, 0.75}, glm::vec4{0, 0, 1, 1} },
-            Vertex{ glm::vec3{p, n, p}, glm::vec3(0, -1, 0), glm::vec2{0.66, 1.00}, glm::vec4{0, 0, 1, 1} },
+            Vertex{ glm::vec3{n, n, 0}, glm::vec3(0, 0, 1), glm::vec2{0, 0}, glm::vec4{1, 1, 1, 1} }, // bottom-left
+            Vertex{ glm::vec3{p, n, 0}, glm::vec3(0, 0, 1), glm::vec2{1, 0}, glm::vec4{1, 1, 1, 1} }, // bottom-right
+            Vertex{ glm::vec3{n, p, 0}, glm::vec3(0, 0, 1), glm::vec2{0, 1}, glm::vec4{1, 1, 1, 1} }, // top-left
+            Vertex{ glm::vec3{p, p, 0}, glm::vec3(0, 0, 1), glm::vec2{1, 1}, glm::vec4{1, 1, 1, 1} }, // top-right
         };
+        // 2 triangles = 6 indices
         std::vector<Index> indices = { 
-             0,  1,  3,  3,  2,  0, // front
-             5,  4,  7,  7,  4,  6, // back
-             8,  9, 11, 11, 10,  8, // left
-            13, 12, 15, 15, 12, 14, // right
-            16, 17, 19, 19, 18, 16, // top
-            23, 21, 20, 23, 20, 22, // bottom
+            0, 1, 3,  // first triangle
+            3, 2, 0,  // second triangle
         };
         _index_count = indices.size();
 

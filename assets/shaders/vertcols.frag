@@ -9,6 +9,7 @@ layout(location = 3) in vec4 in_col;
 layout(location = 0) out vec4 out_color;
 // texture unit
 layout(binding = 0) uniform sampler2D tex_diffuse;
+
 // uniform color override (location 16 to avoid conflict with transforms)
 layout(location = 16) uniform vec4 u_color;
 layout(location = 17) uniform int u_use_uniform_color;
@@ -21,6 +22,7 @@ float calc_diffuse(vec3 normal, vec3 light_dir) {
 
 void main() {
     vec3 normal = normalize(in_norm); // make sure its normalized after interpolation
+    // USE UNIFORM COLOR OVERRIDE IF ENABLED
     vec4 diffuse_col = (u_use_uniform_color != 0) ? u_color : in_col;
 
     // simulate a light at a static position
@@ -29,7 +31,7 @@ void main() {
     vec3 light_dir = normalize(light_pos - in_pos); // vector from light to current pixel world position
 
     // calculate ambient light (light influence that is present everywhere)
-    float ambient_str = 0.05;
+    float ambient_str = 0.3; // Increased ambient for better visibility
     vec3 ambient_light = light_col * ambient_str;
     
     // calculate diffuse light (based on angle between normal and light)
