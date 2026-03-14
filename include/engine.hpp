@@ -6,8 +6,17 @@
 #include "graphics_render/pipeline.hpp"
 #include "snake_game.hpp"
 
-// Engine: the main game loop
-// Handles window, camera, pipeline, and runs the snake game
+/**
+ * ENGINE
+ * Purpose: The beating heart of the program that ties everything together.
+ * 
+ * Flow:
+ * - Owns all the core systems (Window, Time, Input, Camera, Graphics Pipeline)
+ * - Owns the specific running Game (SnakeGame)
+ * - handle_sdl_event(): Listens to the window and passes keys/clicks into the Input system
+ * - handle_sdl_frame(): Runs 60+ times a second to update the time, update the game logic,
+ *   clear the screen, and ask the game to draw itself using the camera.
+ */
 struct Engine {
     // Core systems
     Time time;
@@ -20,7 +29,7 @@ struct Engine {
     
     Engine() {
         time.init();
-        window.init(1920, 1080);
+        window.init(1080, 1080);
         pipeline.init("default.vert", "vertcols.frag");
         game.init();
         

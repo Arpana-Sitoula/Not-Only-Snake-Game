@@ -1,5 +1,15 @@
 #pragma once
 
+/**
+ * INPUT (Graphics Render / System)
+ * Purpose: A global system that captures and stores what keys/mouse buttons are pressed.
+ * 
+ * Flow:
+ * - Data: Hidden singleton holding memory of what is pressed, held, or released
+ * - register_event(): The Engine passes raw SDL events here to be sorted
+ * - flush(): Clears single-frame actions (like "just pressed") at the end of each frame
+ * - Keys/Mouse: Easy-to-read Helper structs so the game can just ask `Keys::pressed(SDLK_W)`
+ */
 namespace Input {
 	// data storage for internal use only
 	struct Data {
