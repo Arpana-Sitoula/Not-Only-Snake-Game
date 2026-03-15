@@ -168,4 +168,33 @@ struct DigitRenderer {
         model.transform._position = glm::vec3(x, y + v_len, 0); model.transform._scale = glm::vec3(h_len, t, 1); model.draw();
         model.transform._position = glm::vec3(x, y, 0); model.transform._scale = glm::vec3(h_len, t, 1); model.draw();
     }
+    static void draw_p(float x, float y, float scale, float thickness, Model& model) {
+        float h_len = scale; float v_len = scale; float t = thickness;
+        // left vertical (top and bottom)
+        model.transform._position = glm::vec3(x - h_len / 2.0f, y + v_len / 2.0f, 0); model.transform._scale = glm::vec3(t, v_len, 1); model.draw();
+        model.transform._position = glm::vec3(x - h_len / 2.0f, y - v_len / 2.0f, 0); model.transform._scale = glm::vec3(t, v_len, 1); model.draw();
+        // top, mid horizontal
+        model.transform._position = glm::vec3(x, y + v_len, 0); model.transform._scale = glm::vec3(h_len, t, 1); model.draw();
+        model.transform._position = glm::vec3(x, y, 0); model.transform._scale = glm::vec3(h_len, t, 1); model.draw();
+        // top right vertical
+        model.transform._position = glm::vec3(x + h_len / 2.0f, y + v_len / 2.0f, 0); model.transform._scale = glm::vec3(t, v_len, 1); model.draw();
+    }
+    static void draw_l(float x, float y, float scale, float thickness, Model& model) {
+        float h_len = scale; float v_len = scale; float t = thickness;
+        // left vertical
+        model.transform._position = glm::vec3(x - h_len / 2.0f, y + v_len / 2.0f, 0); model.transform._scale = glm::vec3(t, v_len, 1); model.draw();
+        model.transform._position = glm::vec3(x - h_len / 2.0f, y - v_len / 2.0f, 0); model.transform._scale = glm::vec3(t, v_len, 1); model.draw();
+        // bottom horizontal
+        model.transform._position = glm::vec3(x, y - v_len, 0); model.transform._scale = glm::vec3(h_len, t, 1); model.draw();
+    }
+    static void draw_y(float x, float y, float scale, float thickness, Model& model) {
+        float h_len = scale; float v_len = scale; float t = thickness;
+        // top left vert, top right vert
+        model.transform._position = glm::vec3(x - h_len / 2.0f, y + v_len / 2.0f, 0); model.transform._scale = glm::vec3(t, v_len, 1); model.draw();
+        model.transform._position = glm::vec3(x + h_len / 2.0f, y + v_len / 2.0f, 0); model.transform._scale = glm::vec3(t, v_len, 1); model.draw();
+        // mid horizontal, bottom horiz
+        model.transform._position = glm::vec3(x, y, 0); model.transform._scale = glm::vec3(h_len, t, 1); model.draw();
+        // bottom center vert
+        model.transform._position = glm::vec3(x, y - v_len / 2.0f, 0); model.transform._scale = glm::vec3(t, v_len, 1); model.draw();
+    }
 };

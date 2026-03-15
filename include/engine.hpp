@@ -4,6 +4,7 @@
 #include "graphics_render/window.hpp"
 #include "graphics_render/camera.hpp"
 #include "graphics_render/pipeline.hpp"
+#include "graphics_render/audio.hpp"
 #include "snake_game.hpp"
 
 /**
@@ -24,6 +25,10 @@ struct Engine {
     Camera camera;
     Pipeline pipeline;
     
+    // Audio
+    Audio _wow, _faaah;
+    SDL_AudioStream *_wow_stream = nullptr, *_faaah_stream = nullptr;
+
     // The game
     SnakeGame game;
     
@@ -33,12 +38,38 @@ struct Engine {
         pipeline.init("default.vert", "vertcols.frag");
         game.init();
         
+        // Init Audio Subsystem
+        SDL_InitSubSystem(SDL_INIT_AUDIO);
+        _wow.init("assets/audio/woww.wav");
+        _faaah.init("assets/audio/faaah.wav");
+
+        // Open streams for playback
+        _wow_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr, nullptr, nullptr);
+        _faaah_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr, nullptr, nullptr);
+
+        SDL_AudioSpec device_format;
+        SDL_GetAudioDeviceFormat(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &device_format, nullptr);
+
+        if (_wow_stream) {
+            SDL_SetAudioStreamFormat(_wow_stream, &_wow.spec, &device_format);
+            SDL_ResumeAudioStreamDevice(_wow_stream);
+        }
+        if (_faaah_stream) {
+            SDL_SetAudioStreamFormat(_faaah_stream, &_faaah.spec, &device_format);
+            SDL_ResumeAudioStreamDevice(_faaah_stream);
+        }
+
         // Fixed camera looking at the board
         camera._position = glm::vec3(0, 0, 10);
         camera._rotation = glm::vec3(0, 0, 0);
     }
     
     ~Engine() {
+        if (_wow_stream) SDL_DestroyAudioStream(_wow_stream);
+        if (_faaah_stream) SDL_DestroyAudioStream(_faaah_stream);
+        _wow.destroy();
+        _faaah.destroy();
+
         game.destroy();
         pipeline.destroy();
         window.destroy();
@@ -64,7 +95,7 @@ struct Engine {
         
         // Game logic
         game.handle_input();
-        game.update(time._delta);
+        game.update(time._delta, _wow, _wow_stream, _faaah, _faaah_stream);
         
         // Render
         pipeline.bind();

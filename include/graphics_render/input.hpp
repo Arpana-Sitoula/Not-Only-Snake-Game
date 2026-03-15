@@ -90,12 +90,14 @@ namespace Input {
 			case SDL_EventType::SDL_EVENT_MOUSE_BUTTON_DOWN: 
 				Data::get().buttons_pressed.insert(event.button.button);
 				Data::get().buttons_down.insert(event.button.button);
+				Data::get().x = event.button.x;
+				Data::get().y = event.button.y;
 				break;
 			case SDL_EventType::SDL_EVENT_MOUSE_MOTION:
-				Data::get().dx += event.motion.xrel;
-				Data::get().dy += event.motion.yrel;
-				Data::get().x += event.motion.xrel;
-				Data::get().y += event.motion.yrel;
+				Data::get().dx = event.motion.xrel;
+				Data::get().dy = event.motion.yrel;
+				Data::get().x = event.motion.x;
+				Data::get().y = event.motion.y;
 				break;
 			default: break;
 		}

@@ -28,6 +28,7 @@ struct SnakeGame {
     Snake snake;
     Food food;
     Model cell_model;  // reused to draw all cells
+    bool waiting_to_start = true;
     
     void init() {
         cell_model.init();
@@ -49,16 +50,15 @@ struct SnakeGame {
         if (Keys::pressed(SDLK_R)) {
             snake.init(board.width / 4, board.height / 4);
             food.spawn(board, snake);
+            waiting_to_start = false; // Restarting also starts the game
         }
 
-        // Handle Mouse Click and Hover on Restart Button
-        if (!snake.alive) {
+        // Handle Mouse Click and Hover on Restart/Play Button
+        if (!snake.alive || waiting_to_start) {
             auto [mx, my] = Mouse::position();
 
-            // Based on user prints, the button bounds in Screen Space are roughly:
-            // X: [-40, 370]
-            // Y: [-130, -40] (in SDL, Y goes down, but since we had negatives let's just use raw values)
-            bool is_hovering = (mx >= -45 && mx <= 375 && my >= -135 && my <= -35);
+            // Precise bounds provided by user for the bottom button
+            bool is_hovering = (mx >= 401 && mx <= 680 && my >= 941 && my <= 1033);
 
             if (is_hovering) {
                 SDL_Cursor* cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_POINTER);
@@ -69,21 +69,32 @@ struct SnakeGame {
             }
 
             if (is_hovering && Mouse::pressed(Mouse::ids::left)) {
-                // Reset cursor before restarting
+                // Reset cursor before starting/restarting
                 SDL_Cursor* cursor = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
                 SDL_SetCursor(cursor);
                 
-                snake.init(board.width / 4, board.height / 4);
-                food.spawn(board, snake);
+                if (waiting_to_start) {
+                    waiting_to_start = false;
+                } else if (!snake.alive) {
+                    snake.init(board.width / 4, board.height / 4);
+                    food.spawn(board, snake);
+                }
             }
         }
     }
     
     // Update game state
-    void update(float delta) {
+    void update(float delta, const Audio& wow, SDL_AudioStream* wow_stream, const Audio& faaah, SDL_AudioStream* faaah_stream) {
+        if (waiting_to_start || !snake.alive) return;
+
         snake.update(delta, board);
         
+        if (!snake.alive) {
+            faaah.play(faaah_stream);
+        }
+
         if (food.check_eaten(snake)) {
+            wow.play(wow_stream);
             snake.grow();
             food.spawn(board, snake);
         }
@@ -100,7 +111,14 @@ struct SnakeGame {
                 glm::vec3 pos = board.grid_to_world(x, y);
                 cell_model.set_position(pos.x, pos.y);
                 cell_model.set_scale(cell_scale);
-                pipeline.set_color(glm::vec4(0.988f, 0.835f, 0.808f, 1.0f));
+                
+                // Checkerboard pattern
+                if ((x + y) % 2 == 0) {
+                    pipeline.set_color(glm::vec4(0.988f, 0.835f, 0.808f, 1.0f)); // #fcd5ce
+                } else {
+                    pipeline.set_color(glm::vec4(0.980f, 0.882f, 0.867f, 1.0f)); // #fae1dd 
+                }
+                
                 cell_model.draw();
             }
         }
@@ -183,32 +201,42 @@ struct SnakeGame {
         DigitRenderer::draw(d2, 0.0f,     score_bg_y, digit_scale, digit_thick, cell_model);
         DigitRenderer::draw(d3, spacing,  score_bg_y, digit_scale, digit_thick, cell_model);
 
-        // 6. Draw Restart Button (Only if dead)
-        if (!snake.alive) {
-            float restart_width = 3.6f;
-            float restart_height = 0.8f;
-            float restart_y = -board_top - border_thickness - restart_height / 2.0f - 0.2f;
+        // 6. Draw Restart/Play Button
+        if (!snake.alive || waiting_to_start) {
+            float btn_width = waiting_to_start ? 2.4f : 3.6f;
+            float btn_height = 0.8f;
+            float btn_y = -board_top - border_thickness - btn_height / 2.0f - 0.2f;
 
             // Background
-            cell_model.transform._position = glm::vec3(0, restart_y, 0);
-            cell_model.transform._scale = glm::vec3(restart_width, restart_height, 1);
+            cell_model.transform._position = glm::vec3(0, btn_y, 0);
+            cell_model.transform._scale = glm::vec3(btn_width, btn_height, 1);
             pipeline.set_color(glm::vec4(1.0f, 0.42f, 0.42f, 1.0f));
             cell_model.draw();
 
-            // Word 'RESTART'
-            pipeline.set_color(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)); // White text
+            // White text
+            pipeline.set_color(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)); 
             float let_scale = 0.15f;
             float let_thick = 0.04f;
             float let_space = 0.4f;
-            float start_x = -let_space * 3.0f;
 
-            DigitRenderer::draw_r(start_x, restart_y, let_scale, let_thick, cell_model);
-            DigitRenderer::draw_e(start_x + let_space * 1, restart_y, let_scale, let_thick, cell_model);
-            DigitRenderer::draw_s(start_x + let_space * 2, restart_y, let_scale, let_thick, cell_model);
-            DigitRenderer::draw_t(start_x + let_space * 3, restart_y, let_scale, let_thick, cell_model);
-            DigitRenderer::draw_a(start_x + let_space * 4, restart_y, let_scale, let_thick, cell_model);
-            DigitRenderer::draw_r(start_x + let_space * 5, restart_y, let_scale, let_thick, cell_model);
-            DigitRenderer::draw_t(start_x + let_space * 6, restart_y, let_scale, let_thick, cell_model);
+            if (waiting_to_start) {
+                // Word 'PLAY'
+                float start_x = -let_space * 1.5f;
+                DigitRenderer::draw_p(start_x, btn_y, let_scale, let_thick, cell_model);
+                DigitRenderer::draw_l(start_x + let_space * 1, btn_y, let_scale, let_thick, cell_model);
+                DigitRenderer::draw_a(start_x + let_space * 2, btn_y, let_scale, let_thick, cell_model);
+                DigitRenderer::draw_y(start_x + let_space * 3, btn_y, let_scale, let_thick, cell_model);
+            } else {
+                // Word 'RESTART'
+                float start_x = -let_space * 3.0f;
+                DigitRenderer::draw_r(start_x, btn_y, let_scale, let_thick, cell_model);
+                DigitRenderer::draw_e(start_x + let_space * 1, btn_y, let_scale, let_thick, cell_model);
+                DigitRenderer::draw_s(start_x + let_space * 2, btn_y, let_scale, let_thick, cell_model);
+                DigitRenderer::draw_t(start_x + let_space * 3, btn_y, let_scale, let_thick, cell_model);
+                DigitRenderer::draw_a(start_x + let_space * 4, btn_y, let_scale, let_thick, cell_model);
+                DigitRenderer::draw_r(start_x + let_space * 5, btn_y, let_scale, let_thick, cell_model);
+                DigitRenderer::draw_t(start_x + let_space * 6, btn_y, let_scale, let_thick, cell_model);
+            }
         }
     }
 };
