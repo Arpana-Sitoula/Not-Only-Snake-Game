@@ -28,7 +28,7 @@ struct Camera {
 
     void bind() {
         // projection matrix
-        glm::mat4x4 projection_matrix = glm::perspectiveFov(_fov, _width, _height, _near_plane, _far_plane);
+        glm::mat4x4 projection_matrix = glm::perspectiveFov(glm::radians(_fov), _width, _height, _near_plane, _far_plane);
 
         // transformation matrix (inverse of normal transform, since it is the camera)
         glm::mat4x4 transform_matrix(1.0f);

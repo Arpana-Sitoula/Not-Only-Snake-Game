@@ -35,8 +35,8 @@ struct Engine {
         pipeline.init("default.vert", "vertcols.frag");
         game_manager.init();
 
-        // Fixed camera looking at the board
-        camera._position = glm::vec3(0, 0, 10);
+        // Fixed camera looking into the room from the door entrance
+        camera._position = glm::vec3(0, 1.6f, 11.0f);
         camera._rotation = glm::vec3(0, 0, 0);
     }
     
@@ -62,7 +62,7 @@ struct Engine {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         // Game logic
-        game_manager.handle_input();
+        game_manager.handle_input(camera);
         game_manager.update(time._delta, camera);
         
         // Render

@@ -33,15 +33,21 @@ struct GameSiteManager {
         explore_floor.destroy();
     }
 
-    void handle_input() {
+    void handle_input(Camera& camera) {
         // Toggle state with TAB key
         if (Keys::pressed(SDLK_TAB)) {
             if (current_state == State::SNAKE_GAME) {
                 current_state = State::EXPLORE_FLOOR;
                 SDL_SetWindowRelativeMouseMode(SDL_GetGrabbedWindow(), true); // Lock mouse for 3D
+                // Start at the door
+                camera._position = glm::vec3(0, 1.6f, 11.0f);
+                camera._rotation = glm::vec3(0, 0, 0);
             } else {
                 current_state = State::SNAKE_GAME;
                 SDL_SetWindowRelativeMouseMode(SDL_GetGrabbedWindow(), false); // Unlock mouse for 2D
+                // Reset camera for 2D game
+                camera._position = glm::vec3(0, 0, 10);
+                camera._rotation = glm::vec3(0, 0, 0);
             }
         }
 
