@@ -19,6 +19,10 @@ struct GameSiteManager {
     SnakeGame snake_game;
     ExploreFloor explore_floor;
 
+    // Persist camera state to return to previous location
+    glm::vec3 last_explore_pos = glm::vec3(0, 1.8f, 11.0f);
+    glm::vec3 last_explore_rot = glm::vec3(0, 0, 0);
+
     void init() {
         snake_game.init();
         explore_floor.init();
@@ -30,22 +34,30 @@ struct GameSiteManager {
     }
 
     void handle_input(Window& window, Camera& camera) {
-        // Toggle state with TAB key
+        // Only switch to snake game when near the screen interaction zone
         if (Keys::pressed(SDLK_TAB)) {
             if (current_state == State::SNAKE_GAME) {
+                // RETURN TO EXPLORE FLOOR
                 current_state = State::EXPLORE_FLOOR;
-                SDL_SetWindowRelativeMouseMode(window._window_p, true); // Lock mouse for 3D
-                // Start at the door
-                camera._position = glm::vec3(0, 1.8f, 11.0f);
-                camera._rotation = glm::vec3(0, 0, 0);
-                camera._fov = 70.0f; // Original 70 degrees for 3D exploration
-            } else {
+                SDL_SetWindowRelativeMouseMode(window._window_p, true);
+                
+                // Restore previous camera state instead of resetting to the door
+                camera._position = last_explore_pos;
+                camera._rotation = last_explore_rot;
+                camera._fov = 70.0f;
+            } else if (near_screen(camera)) {
+                // START SNAKE GAME
+                // Save current camera state before switching
+                last_explore_pos = camera._position;
+                last_explore_rot = camera._rotation;
+
                 current_state = State::SNAKE_GAME;
-                SDL_SetWindowRelativeMouseMode(window._window_p, false); // Unlock mouse for 2D
-                // Reset camera for 2D game
+                SDL_SetWindowRelativeMouseMode(window._window_p, false);
+                
+                // Setup 2D view for snake game
                 camera._position = glm::vec3(0, 0, 10);
                 camera._rotation = glm::vec3(0, 0, 0);
-                camera._fov = 50.0f; // Approx original look for 2D board
+                camera._fov = 50.0f;
             }
         }
 
@@ -62,7 +74,7 @@ struct GameSiteManager {
 
     void update(float delta, Camera& camera) {
         if (current_state == State::SNAKE_GAME) {
-            // Reset camera for 2D game
+            // Ensure camera stays locked in 2D position während playing
             camera._position = glm::vec3(0, 0, 10);
             camera._rotation = glm::vec3(0, 0, 0);
             camera._fov = 50.0f;
@@ -79,7 +91,15 @@ struct GameSiteManager {
         if (current_state == State::SNAKE_GAME) {
             snake_game.draw(pipeline, camera);
         } else {
-            explore_floor.draw(pipeline, camera);
+            explore_floor.draw(pipeline, camera, near_screen(camera));
         }
+    }
+
+    // Returns true if camera is within interaction range of the screen front zone
+    bool near_screen(const Camera& camera) const {
+        // Screen is at X=-9.85, facing +X. Interaction zone is in front of it.
+        glm::vec3 zone = glm::vec3(-7.5f, 1.8f, 0.0f);
+        float dist = glm::length(glm::vec3(camera._position) - zone);
+        return dist < 4.0f;
     }
 };

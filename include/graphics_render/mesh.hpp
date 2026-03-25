@@ -37,10 +37,10 @@ struct Mesh {
         float n = -0.5f;
         
         std::vector<Vertex> vertices = {
-            Vertex{ glm::vec3{n, n, 0}, glm::vec3(0, 0, 1), glm::vec2{0, 0}, glm::vec4{1, 1, 1, 1} },
-            Vertex{ glm::vec3{p, n, 0}, glm::vec3(0, 0, 1), glm::vec2{1, 0}, glm::vec4{1, 1, 1, 1} },
-            Vertex{ glm::vec3{n, p, 0}, glm::vec3(0, 0, 1), glm::vec2{0, 1}, glm::vec4{1, 1, 1, 1} },
-            Vertex{ glm::vec3{p, p, 0}, glm::vec3(0, 0, 1), glm::vec2{1, 1}, glm::vec4{1, 1, 1, 1} },
+            Vertex{ glm::vec3{n, n, 0}, glm::vec3(0, 0, 1), glm::vec2{0, 1}, glm::vec4{1, 1, 1, 1} }, // bottom-left -> UV(0,1)
+            Vertex{ glm::vec3{p, n, 0}, glm::vec3(0, 0, 1), glm::vec2{1, 1}, glm::vec4{1, 1, 1, 1} }, // bottom-right -> UV(1,1)
+            Vertex{ glm::vec3{n, p, 0}, glm::vec3(0, 0, 1), glm::vec2{0, 0}, glm::vec4{1, 1, 1, 1} }, // top-left -> UV(0,0)
+            Vertex{ glm::vec3{p, p, 0}, glm::vec3(0, 0, 1), glm::vec2{1, 0}, glm::vec4{1, 1, 1, 1} }, // top-right -> UV(1,0)
         };
         std::vector<Index> indices = { 0, 1, 3, 3, 2, 0 };
         
@@ -111,7 +111,7 @@ struct Mesh {
                     }
 
                     if (pi > 0) v.position = temp_positions[pi - 1]; else if (pi < 0) v.position = temp_positions[temp_positions.size() + pi];
-                    if (ti > 0) v.uv = temp_uvs[ti - 1]; else if (ti < 0) v.uv = temp_uvs[temp_uvs.size() + ti];
+                    if (ti > 0) v.uv = glm::vec2(temp_uvs[ti - 1].x, 1.0f - temp_uvs[ti - 1].y); else if (ti < 0) v.uv = glm::vec2(temp_uvs[temp_uvs.size() + ti].x, 1.0f - temp_uvs[temp_uvs.size() + ti].y);
                     if (ni > 0) v.normal = temp_normals[ni - 1]; else if (ni < 0) v.normal = temp_normals[temp_normals.size() + ni];
 
                     Index idx = (Index)vertices.size();

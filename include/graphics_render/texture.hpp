@@ -13,7 +13,6 @@ struct Texture {
             std::exit(1);
         }
 
-        SDL_FlipSurface(texture_raw_p, SDL_FLIP_VERTICAL);
 
         // store width and height
         _width = texture_raw_p->w;

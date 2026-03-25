@@ -47,6 +47,7 @@ struct ExploreFloor {
     Texture wall_tex;
     Texture sofa_tex;
     Texture screen_tex;
+    Texture prompt_tex;
     Texture plant_leaf_tex, plant_pot_tex, plant_soil_tex, plant_root_tex;
 
     void init() {
@@ -83,7 +84,10 @@ struct ExploreFloor {
         plant_root_tex.init("indoor plant_2_COL.jpg");
 
         // Screen 
-        screen_tex.init("Game with Hello Kitty.png");
+        screen_tex.init("Game with Hello Kitty.png"); 
+
+        // Interaction Prompt Text
+        prompt_tex.init("prompt tex.png");
     }
 
     void destroy() {
@@ -93,6 +97,7 @@ struct ExploreFloor {
         wall_tex.destroy();
         sofa_tex.destroy();
         screen_tex.destroy();
+        prompt_tex.destroy();
         plant_leaf_tex.destroy();
         plant_pot_tex.destroy();
         plant_soil_tex.destroy();
@@ -107,7 +112,7 @@ struct ExploreFloor {
         // Any logic for updating the floor models (e.g. animations)
     }
 
-    void draw(Pipeline& pipeline, Camera& camera) {
+    void draw(Pipeline& pipeline, Camera& camera, bool show_prompt = false) {
         pipeline.bind();
         camera.bind();
         
@@ -115,7 +120,7 @@ struct ExploreFloor {
         view.draw(base_floor, sofa_model, wall_model, carpet_model, pipeline, test_box, carpet_tex, floor_tex, wall_tex, sofa_tex);
         
         // Draw Screen
-        screen_view.draw(screen_model, pipeline, test_box, screen_tex);
+        screen_view.draw(screen_model, pipeline, test_box, screen_tex, prompt_tex, show_prompt);
 
         // Draw Plant 
         plant_view.draw(plant_model, pipeline, 
