@@ -4,8 +4,10 @@
 #include "explore_floor/model/wall_model.hpp"
 #include "explore_floor/model/carpet_model.hpp"
 #include "explore_floor/model/screen_model.hpp"
+#include "explore_floor/model/plant_model.hpp"
 #include "explore_floor/view/floor_view.hpp"
 #include "explore_floor/view/screen_view.hpp"
+#include "explore_floor/view/plant_view.hpp"
 #include "explore_floor/controller/floor_controller.hpp"
 #include "graphics_render/pipeline.hpp"
 #include "graphics_render/camera.hpp"
@@ -23,20 +25,28 @@ struct ExploreFloor {
     WallModel wall_model;
     CarpetModel carpet_model;
     ScreenModel screen_model;
+    PlantModel plant_model;
 
     // Views
     FloorView view;
     ScreenView screen_view;
+    PlantView plant_view;
 
     // Controller
     FloorController controller;
 
-    // Assets
+    // Common Resources
     Model test_box; // Internal model for drawing boxes
+    
+    // Plant Sub-Models
+    Model plant_leaves_obj, plant_pot_obj, plant_soil_obj, plant_root_obj;
+    Mesh  plant_leaves_mesh, plant_pot_mesh, plant_soil_mesh, plant_root_mesh;
+
     Texture carpet_tex;
     Texture floor_tex;
     Texture wall_tex;
     Texture sofa_tex;
+    Texture plant_leaf_tex, plant_pot_tex, plant_soil_tex, plant_root_tex;
 
     void init() {
         base_floor.init();
@@ -44,13 +54,32 @@ struct ExploreFloor {
         wall_model.init();
         carpet_model.init();
         screen_model.init();
+        plant_model.init();
         test_box.init();
+
+        // Load Plant Parts by Material (Split into 4 components for correct texturing)
+        const std::string plant_path = "../assets/models/indoor plant_02.obj";
+        plant_leaves_mesh.load_obj(plant_path, "indoor_plant_02", "IDP_leaves");
+        plant_pot_mesh.load_obj(plant_path, "indoor_plant_02", "IDP_Pot");
+        plant_soil_mesh.load_obj(plant_path, "indoor_plant_02", "IDP_ground");
+        plant_root_mesh.load_obj(plant_path, "indoor_plant_02", "IDP_root");
+
+        plant_leaves_obj.init(&plant_leaves_mesh);
+        plant_pot_obj.init(&plant_pot_mesh);
+        plant_soil_obj.init(&plant_soil_mesh);
+        plant_root_obj.init(&plant_root_mesh);
         
         // Load 3D Textures
         carpet_tex.init("carpet.jpg");
         floor_tex.init("wood_floor.jpg");
         wall_tex.init("plastered_wall.jpg");
         sofa_tex.init("floral_jacquard.jpg");
+
+        // Use the COL texture for all 4 parts as it contains the layout for each
+        plant_leaf_tex.init("indoor plant_2_COL.jpg");
+        plant_pot_tex.init("indoor plant_2_COL.jpg");
+        plant_soil_tex.init("indoor plant_2_COL.jpg");
+        plant_root_tex.init("indoor plant_2_COL.jpg");
     }
 
     void destroy() {
@@ -59,6 +88,10 @@ struct ExploreFloor {
         floor_tex.destroy();
         wall_tex.destroy();
         sofa_tex.destroy();
+        plant_leaf_tex.destroy();
+        plant_pot_tex.destroy();
+        plant_soil_tex.destroy();
+        plant_root_tex.destroy();
     }
 
     void handle_input(Camera& camera, float delta) {
@@ -78,5 +111,12 @@ struct ExploreFloor {
         
         // Draw Screen
         screen_view.draw(screen_model, pipeline, test_box);
+
+        // Draw Plant 
+        plant_view.draw(plant_model, pipeline, 
+                        plant_leaves_obj, plant_leaf_tex,
+                        plant_pot_obj,    plant_pot_tex,
+                        plant_soil_obj,   plant_soil_tex,
+                        plant_root_obj,   plant_root_tex);
     }
 };
