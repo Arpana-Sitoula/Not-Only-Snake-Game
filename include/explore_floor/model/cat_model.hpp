@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/random.hpp>
 #include <iostream>
-#include "../physics.hpp"
+#include "physics.hpp"
 
 enum class CatState { IDLE, WALKING };
 
@@ -71,7 +71,7 @@ struct CatModel {
         for (int i = 0; i < 30; ++i) {
             glm::vec3 p = glm::vec3(glm::linearRand(-8.5f, 8.5f), -0.05f, glm::linearRand(-8.5f, 8.5f));
             // Ensure target isn't inside furniture
-            if (!FloorPhysics::is_colliding(p, 0.6f)) {
+            if (!FloorPhysics::is_colliding(p, 0.3f)) {
                 target_pos = p;
                 state = CatState::WALKING;
                 return;

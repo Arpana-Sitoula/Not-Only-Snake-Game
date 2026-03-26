@@ -61,7 +61,9 @@ struct ExploreFloor {
 
     // Audio
     Audio cat_meow;
+    Audio walk_sound;
     SDL_AudioStream* meow_stream = nullptr;
+    SDL_AudioStream* walk_stream = nullptr;
     float meow_cooldown = 0;
 
     void init() {
@@ -113,12 +115,24 @@ struct ExploreFloor {
 
         // Audio Init
         cat_meow.init("assets/audio/meow.wav");
+        walk_sound.init("assets/audio/walk.wav");
+
+        // Meow Stream
         meow_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr, nullptr, nullptr);
         if (meow_stream) {
             SDL_AudioSpec device_format;
             SDL_GetAudioDeviceFormat(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &device_format, nullptr);
             SDL_SetAudioStreamFormat(meow_stream, &cat_meow.spec, &device_format);
             SDL_ResumeAudioStreamDevice(meow_stream);
+        }
+
+        // Walk Stream
+        walk_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr, nullptr, nullptr);
+        if (walk_stream) {
+            SDL_AudioSpec device_format;
+            SDL_GetAudioDeviceFormat(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &device_format, nullptr);
+            SDL_SetAudioStreamFormat(walk_stream, &walk_sound.spec, &device_format);
+            SDL_ResumeAudioStreamDevice(walk_stream);
         }
     }
 
@@ -138,7 +152,9 @@ struct ExploreFloor {
         cat_mesh.destroy();
 
         if (meow_stream) SDL_DestroyAudioStream(meow_stream);
+        if (walk_stream) SDL_DestroyAudioStream(walk_stream);
         cat_meow.destroy();
+        walk_sound.destroy();
     }
 
     void handle_input(Camera& camera, float delta) {
@@ -166,6 +182,16 @@ struct ExploreFloor {
         if (dist < 1.0f && bump_cooldown <= 0) {
             cat_meow.play(meow_stream);
             bump_cooldown = 1.0f; 
+        }
+
+        // 3. Walking Sound
+        if (controller.is_active()) {
+            static float step_timer = 0;
+            step_timer -= delta;
+            if (step_timer <= 0) {
+                walk_sound.play(walk_stream);
+                step_timer = 0.5f; // Step frequency
+            }
         }
     }
 
