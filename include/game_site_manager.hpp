@@ -83,19 +83,19 @@ struct GameSiteManager {
         } else {
             glEnable(GL_DEPTH_TEST);
             explore_floor.handle_input(camera, delta);
-            explore_floor.update(delta);
+            explore_floor.update(delta, camera);
         }
     }
 
     void draw(Pipeline& pipeline, Camera& camera) {
         if (current_state == State::SNAKE_GAME) {
+            pipeline.use_lighting(false);
             snake_game.draw(pipeline, camera);
         } else {
             explore_floor.draw(pipeline, camera, near_screen(camera));
         }
     }
 
-    // Returns true if camera is within interaction range of the screen front zone
     bool near_screen(const Camera& camera) const {
         glm::vec3 zone = glm::vec3(-7.5f, 1.8f, 0.0f);
         float dist = glm::length(glm::vec3(camera._position) - zone);

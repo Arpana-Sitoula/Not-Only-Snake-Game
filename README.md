@@ -1,3 +1,7 @@
+## Getting Started
+
+To learn how to play, move, and interact with the world, please check out our:**[User Manual (Simple Instructions)](user.manual.md)**
+
 # Not Only Snake Game - Computer Graphics Project
 
 This project was developed as part of a semester module for Computer Graphics. The initial codebase and project structure are based on the class activity template provided by the professor.
