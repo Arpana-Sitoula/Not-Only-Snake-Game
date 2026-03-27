@@ -138,23 +138,9 @@ struct ExploreFloor {
         cat_meow.init("assets/audio/meow.wav");
         walk_sound.init("assets/audio/walk.wav");
 
-        // Meow Stream
-        meow_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr, nullptr, nullptr);
-        if (meow_stream) {
-            SDL_AudioSpec device_format;
-            SDL_GetAudioDeviceFormat(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &device_format, nullptr);
-            SDL_SetAudioStreamFormat(meow_stream, &cat_meow.spec, &device_format);
-            SDL_ResumeAudioStreamDevice(meow_stream);
-        }
-
-        // Walk Stream
-        walk_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr, nullptr, nullptr);
-        if (walk_stream) {
-            SDL_AudioSpec device_format;
-            SDL_GetAudioDeviceFormat(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &device_format, nullptr);
-            SDL_SetAudioStreamFormat(walk_stream, &walk_sound.spec, &device_format);
-            SDL_ResumeAudioStreamDevice(walk_stream);
-        }
+        // Open Streams
+        meow_stream = cat_meow.open_stream();
+        walk_stream = walk_sound.open_stream();
     }
 
     void destroy() {

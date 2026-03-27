@@ -28,11 +28,11 @@ struct WallModel {
         walls.push_back({glm::vec3(10, 2.5f, 0), glm::vec3(0.1f, 5, 20.1f), glm::vec4(0.3f, 0.3f, 0.35f, 1.0f)});
         
         // Front Wall (Door Entrance)
-        // Left part of front wall (x from -10 to -2)
+        // Left part of front wall 
         walls.push_back({glm::vec3(-6.0f, 2.5f, 10), glm::vec3(8, 5, 0.1f), glm::vec4(0.3f, 0.3f, 0.35f, 1.0f)});
-        // Right part of front wall (x from 2 to 10)
+        // Right part of front wall
         walls.push_back({glm::vec3(6.0f, 2.5f, 10), glm::vec3(8, 5, 0.1f), glm::vec4(0.3f, 0.3f, 0.35f, 1.0f)});
-        // Top part above door (y from 3 to 5)
+        // Top part above door 
         walls.push_back({glm::vec3(0, 4.0f, 10), glm::vec3(4, 2, 0.1f), glm::vec4(0.3f, 0.3f, 0.35f, 1.0f)});
 
         // Ceiling

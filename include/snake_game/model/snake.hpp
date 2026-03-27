@@ -75,7 +75,7 @@ struct Snake {
         }
         
         body.push_front(new_head);
-        body.pop_back();  // Remove tail (unless eating)
+        body.pop_back();  // Remove tail (unless eating) to make it feel like snake is moving
     }
     
     void grow() {

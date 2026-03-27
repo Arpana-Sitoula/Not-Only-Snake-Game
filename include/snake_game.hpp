@@ -64,20 +64,8 @@ struct SnakeGame {
         _wow.init("assets/audio/woww.wav");
         _faaah.init("assets/audio/faaah.wav");
 
-        _wow_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr, nullptr, nullptr);
-        _faaah_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr, nullptr, nullptr);
-
-        SDL_AudioSpec device_format;
-        SDL_GetAudioDeviceFormat(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &device_format, nullptr);
-
-        if (_wow_stream) {
-            SDL_SetAudioStreamFormat(_wow_stream, &_wow.spec, &device_format);
-            SDL_ResumeAudioStreamDevice(_wow_stream);
-        }
-        if (_faaah_stream) {
-            SDL_SetAudioStreamFormat(_faaah_stream, &_faaah.spec, &device_format);
-            SDL_ResumeAudioStreamDevice(_faaah_stream);
-        }
+        _wow_stream = _wow.open_stream();
+        _faaah_stream = _faaah.open_stream();
     }
     
     void destroy() {

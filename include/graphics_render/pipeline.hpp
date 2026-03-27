@@ -62,7 +62,7 @@ struct Pipeline {
             std::exit(1);
         }
 
-        // create graphics pipeline (aka program)
+        // create graphics pipeline
         _shader_program = glCreateProgram();
         glAttachShader(_shader_program, shader_vertex);
         glAttachShader(_shader_program, shader_fragment);

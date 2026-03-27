@@ -65,7 +65,7 @@ struct GameSiteManager {
             snake_game.handle_input();
         } else {
             // EXPLORE FLOOR
-            // Fail-safe: Ensure mouse is locked if we are in 3D mode (TODO: Find solution for exit)
+            // Fail-safe: Ensure mouse is locked if we are in 3D mode
             if (!SDL_GetWindowRelativeMouseMode(window._window_p)) {
                 SDL_SetWindowRelativeMouseMode(window._window_p, true);
             }
